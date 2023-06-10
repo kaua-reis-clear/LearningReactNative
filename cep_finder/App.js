@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,37 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  Keyboard,
 } from 'react-native';
+import api from './src/services/api';
 
 export default function App() {
   const [cep, setCep] = useState('');
+  const inputRef = useRef(null);
+  const [cepUser, setCepUser] = useState();
+
+  async function buscar() {
+    if (cep === '') {
+      alert('Digite um cep válido');
+      setCep('');
+      return;
+    }
+
+    try {
+      const response = await api.get(`/${cep}/json`);
+      console.log(response.data);
+      setCepUser(response.data);
+      Keyboard.dismiss();
+    } catch (error) {
+      console.log('ERROR', +error);
+    }
+  }
+
+  function limpar() {
+    setCep('');
+    inputRef.current.focus();
+    setCepUser(null);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -24,20 +51,26 @@ export default function App() {
         />
       </View>
       <View style={styles.areaBtn}>
-        <TouchableOpacity style={[styles.botao, {backgroundColor: '#1d75cd'}]}>
+        <TouchableOpacity
+          style={[styles.botao, {backgroundColor: '#1d75cd'}]}
+          onPress={buscar}>
           <Text style={styles.botaoText}>Buscar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.botao, {backgroundColor: '#cd3e1d'}]}>
+        <TouchableOpacity
+          style={[styles.botao, {backgroundColor: '#cd3e1d'}]}
+          onPress={limpar}>
           <Text style={styles.botaoText}>Limpar</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.resultado}>
-        <Text style={styles.itemText}>CEP: 1173000</Text>
-        <Text style={styles.itemText}>Logradouro: 11730000</Text>
-        <Text style={styles.itemText}>Bairro: Itaóca</Text>
-        <Text style={styles.itemText}>Cidade: São Paulo</Text>
-        <Text style={styles.itemText}>Estado: SP</Text>
-      </View>
+      {cepUser && (
+        <View style={styles.resultado}>
+          <Text style={styles.itemText}>CEP: {cepUser.cep}</Text>
+          <Text style={styles.itemText}>Logradouro: {cepUser.logradouro}</Text>
+          <Text style={styles.itemText}>Bairro: {cepUser.bairro}</Text>
+          <Text style={styles.itemText}>Cidade: {cepUser.localidade}</Text>
+          <Text style={styles.itemText}>Estado: {cepUser.uf}</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
