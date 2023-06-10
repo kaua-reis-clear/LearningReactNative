@@ -1,5 +1,12 @@
 import React, {Component} from 'react';
-import {Animated, Platform, StyleSheet, Text, View} from 'react-native';
+import {
+  Animated,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 export default class App extends Component {
   constructor(props) {
@@ -7,42 +14,62 @@ export default class App extends Component {
     this.state = {
       LarAnimada: new Animated.Value(150),
       AltAnimada: new Animated.Value(35),
+      OpAnimada: new Animated.Value(0),
     };
 
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(this.state.LarAnimada, {
-          toValue: 200,
-          duration: 400,
-        }),
-        Animated.timing(this.state.LarAnimada, {
-          toValue: 150,
-          duration: 400,
-        }),
-      ]),
-    ).start();
+    this.carregarGrafico = this.carregarGrafico.bind(this);
+  }
+
+  carregarGrafico() {
+    Animated.sequence([
+      Animated.timing(this.state.OpAnimada, {
+        toValue: 1,
+        duration: 400,
+      }),
+      Animated.timing(this.state.AltAnimada, {
+        toValue: 300,
+        duration: 1000,
+      }),
+    ]).start();
   }
 
   render() {
     return (
-      <View style={styles.container}>
-        <Animated.View
+      <View style={{flex: 1}}>
+        <View
           style={{
-            width: this.state.LarAnimada,
-            height: this.state.AltAnimada,
-            backgroundColor: '#4169E1',
+            height: 80,
+            alignItems: 'center',
             justifyContent: 'center',
-            borderRadius: 25,
+            flexDirection: 'row',
+            backgroundColor: '#4169E1',
           }}>
-          <Text
+          <TouchableOpacity onPress={this.carregarGrafico}>
+            <Text style={{fontSize: 25, color: '#FFF'}}>Gerar Gráfico</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View
+          style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}>
+          <Text>Vendas</Text>
+          <Animated.View
             style={{
-              color: '#FFF',
-              fontSize: 22,
-              textAlign: 'center',
+              width: this.state.LarAnimada,
+              height: this.state.AltAnimada,
+              backgroundColor: '#F00',
+              justifyContent: 'center',
+              opacity: this.state.OpAnimada,
             }}>
-            Carregando...
-          </Text>
-        </Animated.View>
+            <Text
+              style={{
+                color: '#FFF',
+                fontSize: 20,
+                textAlign: 'center',
+              }}>
+              R$ 150,00
+            </Text>
+          </Animated.View>
+        </View>
       </View>
     );
   }
