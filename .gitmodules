@@ -1,0 +1,21 @@
+[submodule "firstApp"]
+	path = firstApp
+	url = git@github.com:kaua-reis-clear/first_app_native_course.git
+[submodule "fortune-cookie"]
+	path = fortune-cookie
+	url = git@github.com:kaua-reis-clear/Fortune_Cookie.git
+[submodule "first-app"]
+	path = first-app
+	url = git@github.com:kaua-reis-clear/first_app_native_course.git
+[submodule "stopwatch"]
+	path = stopwatch
+	url = git@github.com:kaua-reis-clear/Stopwatch_RN_App.git
+[submodule "insta-sujeito"]
+	path = insta-sujeito
+	url = git@github.com:kaua-reis-clear/InstaSujeito_RN.git
+[submodule "learning-more"]
+	path = learning-more
+	url = git@github.com:kaua-reis-clear/Learning_More_RN.git
+[submodule "advancing-with-rn"]
+	path = advancing-with-rn
+	url = git@github.com:kaua-reis-clear/Advancing_React_Native.git
