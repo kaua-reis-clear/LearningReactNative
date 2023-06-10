@@ -6,36 +6,21 @@ export default class App extends Component {
     super(props);
     this.state = {
       LarAnimada: new Animated.Value(150),
-      AltAnimada: new Animated.Value(50),
-      OpacidadeAnimada: new Animated.Value(0),
+      AltAnimada: new Animated.Value(35),
     };
 
-    Animated.sequence([
-      Animated.timing(this.state.OpacidadeAnimada, {
-        toValue: 1,
-        duration: 1500,
-      }),
-      Animated.parallel([
+    Animated.loop(
+      Animated.sequence([
         Animated.timing(this.state.LarAnimada, {
-          toValue: 300,
-          duration: 2000,
-        }),
-        Animated.timing(this.state.AltAnimada, {
           toValue: 200,
-          duration: 2000,
+          duration: 400,
+        }),
+        Animated.timing(this.state.LarAnimada, {
+          toValue: 150,
+          duration: 400,
         }),
       ]),
-
-      Animated.timing(this.state.OpacidadeAnimada, {
-        toValue: 0,
-        duration: 1500,
-      }),
-    ]).start();
-
-    // Animated.timing(this.state.AltAnimada, {
-    //   toValue: 150,
-    //   duration: 500,
-    // }).start();
+    ).start();
   }
 
   render() {
@@ -47,7 +32,7 @@ export default class App extends Component {
             height: this.state.AltAnimada,
             backgroundColor: '#4169E1',
             justifyContent: 'center',
-            opacity: this.state.OpacidadeAnimada,
+            borderRadius: 25,
           }}>
           <Text
             style={{
