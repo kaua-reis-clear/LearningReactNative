@@ -7,15 +7,43 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
+
+import app from '../../services/firebaseConfig';
 
 export default function Login() {
+  const auth = getAuth(app);
   const [type, setType] = useState('cadastro');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   function handleLogin() {
-    alert('TESTE');
+    if (type === 'login') {
+      const user = signInWithEmailAndPassword(auth, email, password)
+        .then(user => {
+          console.log(user.user);
+        })
+        .catch(err => {
+          console.log(err);
+          alert('Ops parece que algo está errado!');
+          return;
+        });
+    } else {
+      const user = createUserWithEmailAndPassword(auth, email, password)
+        .then(user => {
+          console.log(user.user);
+        })
+        .catch(err => {
+          console.log(err);
+          alert('Ops parece que algo está errado!');
+          return;
+        });
+    }
   }
 
   return (
@@ -31,6 +59,7 @@ export default function Login() {
         placeholder="*******"
         style={styles.input}
         value={password}
+        secureTextEntry={true}
         onChangeText={text => setPassword(text)}
       />
 
