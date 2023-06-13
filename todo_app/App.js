@@ -18,6 +18,7 @@ import {
   set,
   update,
 } from 'firebase/database';
+import Feather from 'react-native-vector-icons/Feather';
 
 import Login from './src/components/Login';
 import TaskList from './src/components/TaskList';
@@ -50,6 +51,12 @@ export default function App() {
     });
   }, [user, db]);
 
+  function cancelEdit() {
+    setKey('');
+    setNewTask('');
+    Keyboard.dismiss();
+  }
+
   function handleAdd() {
     if (newTask === '') {
       return;
@@ -65,9 +72,7 @@ export default function App() {
 
         setTasks([...taskClone]);
       });
-      Keyboard.dismiss();
-      setNewTask('');
-      setKey('');
+      cancelEdit();
       return;
     }
 
@@ -107,6 +112,16 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {key.length > 0 && (
+        <View style={{flexDirection: 'row', marginBottom: 8}}>
+          <TouchableOpacity onPress={cancelEdit}>
+            <Feather name="x-circle" size={20} color="#F00" />
+          </TouchableOpacity>
+          <Text style={{marginLeft: 5, color: '#F00'}}>
+            Você está editando uma tarefa!
+          </Text>
+        </View>
+      )}
       <View style={styles.containerTask}>
         <TextInput
           style={styles.input}
