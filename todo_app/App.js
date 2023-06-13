@@ -28,10 +28,12 @@ export default function App() {
     }
 
     set(ref(db, `tarefas/${user}/${tasks.length}`), {
-      key: tasks.length,
       nome: newTask,
     }).then(() => {
-      setTasks(oldTasks => [...oldTasks, {key: tasks.length, nome: newTask}]);
+      setTasks(oldTasks => [
+        ...oldTasks,
+        {key: oldTasks.length, nome: newTask},
+      ]);
 
       Keyboard.dismiss();
       setNewTask('');
@@ -47,12 +49,24 @@ export default function App() {
   }
 
   useEffect(() => {
+    if (!user) {
+      return;
+    }
     get(child(ref(db), `tarefas/${user}`)).then(snapshot => {
       if (snapshot.exists()) {
-        setTasks(snapshot.val());
+        snapshot?.forEach(childItem => {
+          setTasks(oldTasks => [
+            ...oldTasks,
+            {key: childItem.key, nome: childItem.val().nome},
+          ]);
+        });
       }
     });
   }, [user, db]);
+
+  useEffect(() => {
+    console.log(tasks);
+  }, [tasks]);
 
   if (!user) {
     return <Login changeStatus={user => setUser(user)} />;
@@ -73,7 +87,7 @@ export default function App() {
       </View>
       <FlatList
         data={tasks}
-        keyExtractor={item => item.key}
+        keyExtractor={item => item?.key}
         renderItem={({item}) => (
           <TaskList
             data={item}
