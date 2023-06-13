@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,20 +7,36 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
+  Keyboard,
 } from 'react-native';
+import {child, get, getDatabase, ref, set} from 'firebase/database';
 
 import Login from './src/components/Login';
 import TaskList from './src/components/TaskList';
-
-let tasks = [
-  {key: '1', nome: 'Comprar Coca cola'},
-  {key: '2', nome: 'Estudar javascript'},
-];
+import app from './src/services/firebaseConfig';
 
 export default function App() {
+  const db = getDatabase(app);
   const [user, setUser] = useState(null);
+  const [tasks, setTasks] = useState([]);
 
   const [newTask, setNewTask] = useState('');
+
+  function handleAdd() {
+    if (newTask === '') {
+      return;
+    }
+
+    set(ref(db, `tarefas/${user}/${tasks.length}`), {
+      key: tasks.length,
+      nome: newTask,
+    }).then(() => {
+      setTasks(oldTasks => [...oldTasks, {key: tasks.length, nome: newTask}]);
+
+      Keyboard.dismiss();
+      setNewTask('');
+    });
+  }
 
   function handleDelete(key) {
     console.log(key);
@@ -30,9 +46,18 @@ export default function App() {
     console.log('ITEM CLICADO', data);
   }
 
+  useEffect(() => {
+    get(child(ref(db), `tarefas/${user}`)).then(snapshot => {
+      if (snapshot.exists()) {
+        setTasks(snapshot.val());
+      }
+    });
+  }, [user, db]);
+
   if (!user) {
     return <Login changeStatus={user => setUser(user)} />;
   }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.containerTask}>
@@ -42,7 +67,7 @@ export default function App() {
           value={newTask}
           onChangeText={text => setNewTask(text)}
         />
-        <TouchableOpacity style={styles.buttonAdd}>
+        <TouchableOpacity style={styles.buttonAdd} onPress={handleAdd}>
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>
       </View>
