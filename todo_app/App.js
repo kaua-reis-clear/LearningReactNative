@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   FlatList,
   Keyboard,
 } from 'react-native';
-import {child, get, getDatabase, ref, set} from 'firebase/database';
+import {child, get, getDatabase, ref, remove, set} from 'firebase/database';
 
 import Login from './src/components/Login';
 import TaskList from './src/components/TaskList';
@@ -21,6 +21,23 @@ export default function App() {
   const [tasks, setTasks] = useState([]);
 
   const [newTask, setNewTask] = useState('');
+
+  const getUser = useCallback(() => {
+    if (!user) {
+      return;
+    }
+    get(child(ref(db), `tarefas/${user}`)).then(snapshot => {
+      if (snapshot.exists()) {
+        setTasks([]);
+        snapshot?.forEach(childItem => {
+          setTasks(oldTasks => [
+            ...oldTasks,
+            {key: childItem.key, nome: childItem.val().nome},
+          ]);
+        });
+      }
+    });
+  }, [user, db]);
 
   function handleAdd() {
     if (newTask === '') {
@@ -41,7 +58,10 @@ export default function App() {
   }
 
   function handleDelete(key) {
-    console.log(key);
+    if (!user) {
+      return;
+    }
+    remove(ref(db, `tarefas/${user}/${key}`)).then(() => getUser());
   }
 
   function handleEdit(data) {
@@ -49,20 +69,8 @@ export default function App() {
   }
 
   useEffect(() => {
-    if (!user) {
-      return;
-    }
-    get(child(ref(db), `tarefas/${user}`)).then(snapshot => {
-      if (snapshot.exists()) {
-        snapshot?.forEach(childItem => {
-          setTasks(oldTasks => [
-            ...oldTasks,
-            {key: childItem.key, nome: childItem.val().nome},
-          ]);
-        });
-      }
-    });
-  }, [user, db]);
+    getUser();
+  }, [getUser]);
 
   useEffect(() => {
     console.log(tasks);
