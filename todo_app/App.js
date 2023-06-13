@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,15 @@ import {
   FlatList,
   Keyboard,
 } from 'react-native';
-import {child, get, getDatabase, ref, remove, set} from 'firebase/database';
+import {
+  child,
+  get,
+  getDatabase,
+  ref,
+  remove,
+  set,
+  update,
+} from 'firebase/database';
 
 import Login from './src/components/Login';
 import TaskList from './src/components/TaskList';
@@ -18,9 +26,12 @@ import app from './src/services/firebaseConfig';
 export default function App() {
   const db = getDatabase(app);
   const [user, setUser] = useState(null);
+
+  const inputRef = useRef(null);
   const [tasks, setTasks] = useState([]);
 
   const [newTask, setNewTask] = useState('');
+  const [key, setKey] = useState('');
 
   const getUser = useCallback(() => {
     if (!user) {
@@ -41,6 +52,22 @@ export default function App() {
 
   function handleAdd() {
     if (newTask === '') {
+      return;
+    }
+
+    if (key !== '') {
+      update(ref(db, `tarefas/${user}/${key}`), {
+        nome: newTask,
+      }).then(() => {
+        const taskIndex = tasks.findIndex(item => item.key === key);
+        const taskClone = tasks;
+        taskClone[taskIndex].nome = newTask;
+
+        setTasks([...taskClone]);
+      });
+      Keyboard.dismiss();
+      setNewTask('');
+      setKey('');
       return;
     }
 
@@ -65,16 +92,14 @@ export default function App() {
   }
 
   function handleEdit(data) {
-    console.log('ITEM CLICADO', data);
+    setKey(data.key);
+    setNewTask(data.nome);
+    inputRef.current.focus();
   }
 
   useEffect(() => {
     getUser();
   }, [getUser]);
-
-  useEffect(() => {
-    console.log(tasks);
-  }, [tasks]);
 
   if (!user) {
     return <Login changeStatus={user => setUser(user)} />;
@@ -88,6 +113,7 @@ export default function App() {
           placeholder="O que vai fazer hoje?"
           value={newTask}
           onChangeText={text => setNewTask(text)}
+          ref={inputRef}
         />
         <TouchableOpacity style={styles.buttonAdd} onPress={handleAdd}>
           <Text style={styles.buttonText}>+</Text>
