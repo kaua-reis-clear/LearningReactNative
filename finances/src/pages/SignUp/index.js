@@ -13,7 +13,7 @@ import {
   SubmitText,
 } from '../SignIn/styles';
 
-export default function SignIn() {
+export default function SignUp() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
