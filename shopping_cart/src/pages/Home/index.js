@@ -45,16 +45,16 @@ export default function Home() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.cartContent}>
-        <Text style={styles.title}>Lista de produtos</Text>
+    <SafeAreaView style={stlyes.container}>
+      <View style={stlyes.cartContent}>
+        <Text style={stlyes.title}>Lista de produtos</Text>
 
         <TouchableOpacity
-          style={styles.cartButton}
+          style={stlyes.cartButton}
           onPress={() => navigation.navigate('Cart')}
         >
-          <View style={styles.dot}>
-            <Text style={styles.dotText}>
+          <View style={stlyes.dot}>
+            <Text style={stlyes.dotText}>
               {cart?.length}
             </Text>
           </View>
@@ -63,7 +63,7 @@ export default function Home() {
       </View>
 
       <FlatList
-        style={styles.list}
+        style={stlyes.list}
         data={products}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => <Product data={item} addToCart={() => handleAddCart(item)} />}
@@ -73,7 +73,7 @@ export default function Home() {
   );
 }
 
-const styles = StyleSheet.create({
+const stlyes = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FAFAFA',
