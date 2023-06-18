@@ -1,23 +1,71 @@
-import React from 'react';
-import {View, Text} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import React, {useState, useContext} from 'react';
+import {Platform, ActivityIndicator} from 'react-native';
 
-import {Container, Tipo, IconView, TipoText, ValorText} from './styles';
+import {AuthContext} from '../../contexts/auth';
 
-export default function HistoricoList({data}) {
+import {
+  Background,
+  Container,
+  Logo,
+  AreaInput,
+  Input,
+  SubmitButton,
+  SubmitText,
+} from '../SignIn/styles';
+
+export default function SignUp() {
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const {signUp, loadingAuth} = useContext(AuthContext);
+
+  function handleSignUp() {
+    signUp(email, password, nome);
+  }
+
   return (
-    <Container>
-      <Tipo>
-        <IconView tipo={data.tipo}>
-          <Icon
-            name={data.tipo === 'despesa' ? 'arrow-down' : 'arrow-up'}
-            color="#FFF"
-            size={20}
+    <Background>
+      <Container behavior={Platform.OS === 'ios' ? 'padding' : ''} enabled>
+        <AreaInput>
+          <Input
+            placeholder="Nome"
+            autoCorrect={false}
+            autoCapitalize="none"
+            value={nome}
+            onChangeText={text => setNome(text)}
           />
-          <TipoText>{data.tipo}</TipoText>
-        </IconView>
-      </Tipo>
-      <ValorText>R$ {data.valor}</ValorText>
-    </Container>
+        </AreaInput>
+
+        <AreaInput>
+          <Input
+            placeholder="Email"
+            autoCorrect={false}
+            autoCapitalize="none"
+            value={email}
+            onChangeText={text => setEmail(text)}
+          />
+        </AreaInput>
+
+        <AreaInput>
+          <Input
+            placeholder="Senha"
+            autoCorrect={false}
+            autoCapitalize="none"
+            value={password}
+            onChangeText={text => setPassword(text)}
+            secureTextEntry={true}
+          />
+        </AreaInput>
+
+        <SubmitButton onPress={handleSignUp}>
+          {loadingAuth ? (
+            <ActivityIndicator size={20} color="#FFF" />
+          ) : (
+            <SubmitText>Cadastrar</SubmitText>
+          )}
+        </SubmitButton>
+      </Container>
+    </Background>
   );
 }
