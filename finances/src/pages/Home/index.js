@@ -1,7 +1,7 @@
 import React, {useContext, useState, useEffect} from 'react';
 import {Alert, TouchableOpacity, Platform} from 'react-native';
-import firebase from '../../services/firebaseConnection';
-import {format, isPast} from 'date-fns';
+import firebase, {db} from '../../services/firebaseConnection';
+import {format} from 'date-fns';
 
 import {AuthContext} from '../../contexts/auth';
 import Header from '../../components/Header';
@@ -11,6 +11,16 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import DatePicker from '../../components/DatePicker';
 
 import {Background, Container, Nome, Saldo, Title, List, Area} from './styles';
+import {
+  equalTo,
+  limitToLast,
+  onValue,
+  orderByChild,
+  query,
+  ref,
+  remove,
+  set,
+} from 'firebase/database';
 
 export default function Home() {
   const [historico, setHistorico] = useState([]);
@@ -24,35 +34,31 @@ export default function Home() {
 
   useEffect(() => {
     async function loadList() {
-      await firebase
-        .database()
-        .ref('users')
-        .child(uid)
-        .on('value', snapshot => {
-          setSaldo(snapshot.val().saldo);
+      onValue(ref(db, `users/${uid}`), snapshot => {
+        setSaldo(snapshot.val().saldo);
+      });
+
+      const historicRef = query(
+        ref(db, `historico/${uid}`),
+        orderByChild('date'),
+        equalTo(format(newDate, 'dd/MM/yy')),
+        limitToLast(10),
+      );
+
+      onValue(historicRef, snapshot => {
+        setHistorico([]);
+
+        snapshot.forEach(childItem => {
+          let list = {
+            key: childItem.key,
+            tipo: childItem.val().tipo,
+            valor: childItem.val().valor,
+            date: childItem.val().date,
+          };
+
+          setHistorico(oldArray => [...oldArray, list].reverse());
         });
-
-      await firebase
-        .database()
-        .ref('historico')
-        .child(uid)
-        .orderByChild('date')
-        .equalTo(format(newDate, 'dd/MM/yy'))
-        .limitToLast(10)
-        .on('value', snapshot => {
-          setHistorico([]);
-
-          snapshot.forEach(childItem => {
-            let list = {
-              key: childItem.key,
-              tipo: childItem.val().tipo,
-              valor: childItem.val().valor,
-              date: childItem.val().date,
-            };
-
-            setHistorico(oldArray => [...oldArray, list].reverse());
-          });
-        });
+      });
     }
 
     loadList();
@@ -76,24 +82,14 @@ export default function Home() {
   }
 
   async function handleDeleteSuccess(data) {
-    await firebase
-      .database()
-      .ref('historico')
-      .child(uid)
-      .child(data.key)
-      .remove()
+    await remove(ref(db, `historico/${uid}/${data.key}`))
       .then(async () => {
         let saldoAtual = saldo;
         data.tipo === 'despesa'
           ? (saldoAtual += parseFloat(data.valor))
           : (saldoAtual -= parseFloat(data.valor));
 
-        await firebase
-          .database()
-          .ref('users')
-          .child(uid)
-          .child('saldo')
-          .set(saldoAtual);
+        await set(ref(db, `users/${uid}/saldo`), saldoAtual);
       })
       .catch(error => {
         console.log(error);

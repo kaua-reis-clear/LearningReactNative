@@ -10,6 +10,7 @@ export default function Picker({onChange, tipo}) {
       <RNPickerSelect
         style={{
           width: '100%',
+          color: '#000',
         }}
         selectedValue={tipo}
         onValueChange={valor => onChange(valor)}>

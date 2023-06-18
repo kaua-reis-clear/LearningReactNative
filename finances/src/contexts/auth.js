@@ -1,6 +1,12 @@
 import React, {useState, createContext, useEffect} from 'react';
-import firebase from '../services/firebaseConnection';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {auth, db} from '../services/firebaseConnection';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut as signOutUser,
+} from 'firebase/auth';
+import {child, get, ref, set} from 'firebase/database';
 
 export const AuthContext = createContext({});
 
@@ -27,27 +33,20 @@ function AuthProvider({children}) {
   //Funcao para logar o usario
   async function signIn(email, password) {
     setLoadingAuth(true);
-    await firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
+    await signInWithEmailAndPassword(auth, email, password)
       .then(async value => {
         let uid = value.user.uid;
-        await firebase
-          .database()
-          .ref('users')
-          .child(uid)
-          .once('value')
-          .then(snapshot => {
-            let data = {
-              uid: uid,
-              nome: snapshot.val().nome,
-              email: value.user.email,
-            };
+        await get(child(ref(db), `users/${uid}`)).then(snapshot => {
+          let data = {
+            uid: uid,
+            nome: snapshot.val().nome,
+            email: value.user.email,
+          };
 
-            setUser(data);
-            storageUser(data);
-            setLoadingAuth(false);
-          });
+          setUser(data);
+          storageUser(data);
+          setLoadingAuth(false);
+        });
       })
       .catch(error => {
         alert(error.code);
@@ -58,29 +57,22 @@ function AuthProvider({children}) {
   //Cadastrar usuario
   async function signUp(email, password, nome) {
     setLoadingAuth(true);
-    await firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
+    await createUserWithEmailAndPassword(auth, email, password)
       .then(async value => {
         let uid = value.user.uid;
-        await firebase
-          .database()
-          .ref('users')
-          .child(uid)
-          .set({
-            saldo: 0,
+        await set(ref(db, `users/${uid}`), {
+          saldo: 0,
+          nome: nome,
+        }).then(() => {
+          let data = {
+            uid: uid,
             nome: nome,
-          })
-          .then(() => {
-            let data = {
-              uid: uid,
-              nome: nome,
-              email: value.user.email,
-            };
-            setUser(data);
-            storageUser(data);
-            setLoadingAuth(false);
-          });
+            email: value.user.email,
+          };
+          setUser(data);
+          storageUser(data);
+          setLoadingAuth(false);
+        });
       })
       .catch(error => {
         alert(error.code);
@@ -93,7 +85,7 @@ function AuthProvider({children}) {
   }
 
   async function signOut() {
-    await firebase.auth().signOut();
+    await signOutUser(auth);
     await AsyncStorage.clear().then(() => {
       setUser(null);
     });

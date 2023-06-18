@@ -12,17 +12,18 @@ function AppRoutes() {
   return (
     <AppDrawer.Navigator
       drawerContent={props => <CustomDrawer {...props} />}
-      drawerStyle={{
-        backgroundColor: '#171717',
-      }}
-      drawerContentOptions={{
+      screenOptions={{
+        headerShown: false,
+        drawerStyle: {
+          backgroundColor: '#171717',
+        },
         labelStyle: {
           fontWeight: 'bold',
         },
-        activeTintColor: '#FFF',
-        activeBackgroundColor: '#00b94a',
-        inactiveBackgroundColor: '#000',
-        inactiveTintColor: '#DDD',
+        drawerActiveTintColor: '#FFF',
+        drawerActiveBackgroundColor: '#00b94a',
+        drawerInactiveBackgroundColor: '#000',
+        drawerInactiveTintColor: '#DDD',
         itemStyle: {
           marginVertical: 5,
         },

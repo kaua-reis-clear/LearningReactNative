@@ -7,12 +7,13 @@ import {
 } from 'react-native';
 import {format} from 'date-fns';
 import {useNavigation} from '@react-navigation/native';
-import firebase from '../../services/firebaseConnection';
 import {AuthContext} from '../../contexts/auth';
 
 import Header from '../../components/Header';
 import {Background, Input, SubmitButton, SubmitText} from './styles';
 import Picker from '../../components/Picker';
+import {get, onValue, ref, set} from 'firebase/database';
+import {db} from '../../services/firebaseConnection';
 
 export default function New() {
   const navigation = useNavigation();
@@ -47,29 +48,25 @@ export default function New() {
   async function handleAdd() {
     let uid = usuario.uid;
 
-    let key = await firebase.database().ref('historico').child(uid).push().key;
-    await firebase
-      .database()
-      .ref('historico')
-      .child(uid)
-      .child(key)
-      .set({
-        tipo: tipo,
-        valor: parseFloat(valor),
-        date: format(new Date(), 'dd/MM/yyyy'),
-      });
+    let key = await get(ref(db, `historico/${uid}`)).key;
+
+    await set(ref(db, `historico/${uid}/${key}`), {
+      tipo: tipo,
+      valor: parseFloat(valor),
+      date: format(new Date(), 'dd/MM/yyyy'),
+    });
 
     //Atualizar o nosso saldo
-    let user = firebase.database().ref('users').child(uid);
-    await user.once('value').then(snapshot => {
+    onValue(ref(db, `users/${uid}`), snapshot => {
       let saldo = parseFloat(snapshot.val().saldo);
 
       tipo === 'despesa'
         ? (saldo -= parseFloat(valor))
         : (saldo += parseFloat(valor));
 
-      user.child('saldo').set(saldo);
+      set(ref(db, `users/${uid}/saldo`), saldo);
     });
+
     Keyboard.dismiss();
     setValor('');
     navigation.navigate('Home');
@@ -90,7 +87,7 @@ export default function New() {
             onChangeText={text => setValor(text)}
           />
 
-          <Picker onChange={setTipo} />
+          <Picker onChange={setTipo} tipo={tipo} />
 
           <SubmitButton onPress={handleSubmit}>
             <SubmitText>Registrar</SubmitText>
