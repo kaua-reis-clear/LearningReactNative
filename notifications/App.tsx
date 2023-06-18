@@ -48,6 +48,8 @@ export default function App() {
           break;
         case EventType.PRESS:
           console.log('TOCOU: ', detail.notification);
+          console.log('Title ', detail.notification?.title);
+          console.log('Corpo ', detail.notification?.body);
       }
     });
   }, []);
@@ -87,7 +89,7 @@ export default function App() {
       timestamp: date.getTime(),
     };
 
-    await notifee.createTriggerNotification(
+    const notification = await notifee.createTriggerNotification(
       {
         title: 'Lembrete Estudo',
         body: 'Estudar JavaScript as 15:30',
@@ -101,6 +103,19 @@ export default function App() {
       },
       trigger,
     );
+
+    console.log('Notification agendada: ', notification);
+  }
+
+  function handleListNotifications() {
+    notifee.getTriggerNotificationIds().then(ids => {
+      console.log(ids);
+    });
+  }
+
+  async function handleCancelNotification() {
+    await notifee.cancelNotification('0xmUraKUfElFvtLuRTJY');
+    console.log('Notificaçao cancelada com sucesso!');
   }
 
   return (
@@ -112,6 +127,10 @@ export default function App() {
         title="Agendar notificaçao"
         onPress={handleScheduleNotification}
       />
+
+      <Button title="Listar notificacoes" onPress={handleListNotifications} />
+
+      <Button title="Cancelar Notificaçao" onPress={handleCancelNotification} />
     </View>
   );
 }
