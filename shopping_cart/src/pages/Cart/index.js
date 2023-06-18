@@ -1,15 +1,15 @@
-import { View, Text, StyleSheet} from 'react-native'
+import { View, Text, StyleSheet } from 'react-native';
 
-export default function Cart(){
-  return(
-    <View style={stlyes.container}>
+export default function Cart() {
+  return (
+    <View style={styles.container}>
       <Text>Pagina Carrinho</Text>
     </View>
-  )
+  );
 }
 
-const stlyes = StyleSheet.create({
-  container:{
-    flex:1
-  }
-})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

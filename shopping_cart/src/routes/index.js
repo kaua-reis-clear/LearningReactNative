@@ -1,18 +1,18 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import Home from '../pages/Home'
-import Cart from '../pages/Cart'
+import Home from '../pages/Home';
+import Cart from '../pages/Cart';
 
 const Stack = createNativeStackNavigator();
 
-export default function Routes(){
-  return(
+export default function Routes() {
+  return (
     <Stack.Navigator>
       <Stack.Screen
         name="Home"
         component={Home}
         options={{
-          headerShown: false
+          headerShown: false,
         }}
       />
 
@@ -20,9 +20,9 @@ export default function Routes(){
         name="Cart"
         component={Cart}
         options={{
-          headerTitle: 'Meu Carrinho'
+          headerTitle: 'Meu Carrinho',
         }}
       />
     </Stack.Navigator>
-  )
+  );
 }
