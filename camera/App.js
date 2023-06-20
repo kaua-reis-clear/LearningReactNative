@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import CameraRoll from '@react-native-community/cameraroll';
+import ImagePicker from 'react-native-image-picker';
 
 export default function App() {
   const [type, setType] = useState(RNCamera.Constants.Type.back);
@@ -64,6 +65,26 @@ export default function App() {
     );
   }
 
+  function openAlbum() {
+    const options = {
+      title: 'Selecione uma foto',
+      chooseFromLibraryButtonTitle: 'Buscar foto do album..',
+      noData: true,
+      mediaType: 'photo',
+    };
+
+    ImagePicker.launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        console.log('Image Picker cancelado...');
+      } else if (response.error) {
+        console.log('Gerou algum erro: ' + response.error);
+      } else {
+        setCapturedPhoto(response.uri);
+        setOpen(true);
+      }
+    });
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar hidden={true} />
@@ -95,7 +116,8 @@ export default function App() {
                 style={styles.capture}>
                 <Text>Tirar foto</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => {}} style={styles.capture}>
+
+              <TouchableOpacity onPress={openAlbum} style={styles.capture}>
                 <Text>Album</Text>
               </TouchableOpacity>
             </View>
