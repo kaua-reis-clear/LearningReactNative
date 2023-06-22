@@ -1,7 +1,8 @@
 import React from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
 
-import ListaProdutos from './components/produtos/ListaProdutos';
+import ListaProdutosV2 from './components/produtos/ListaProdutosV2';
+// import ListaProdutos from './components/produtos/ListaProdutos'
 // import UsuarioLogado from './components/UsuarioLogado'
 // import Familia from './components/relacao/Familia'
 // import Membro from './components/relacao/Membro'
@@ -20,8 +21,9 @@ import ListaProdutos from './components/produtos/ListaProdutos';
 
 export default () => (
   <SafeAreaView style={style.App}>
-    <ListaProdutos />
+    <ListaProdutosV2 />
     {/*
+        <ListaProdutos />
         <UsuarioLogado usuario={{ nome:"Gui", email:"gui@gui.com" }} />
         <UsuarioLogado usuario={{ nome:"Ana" }} />
         <UsuarioLogado usuario={{ email:"carlos@empresa.com" }} />
