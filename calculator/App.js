@@ -1,11 +1,15 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import Button from './src/components/Button';
+import Display from './src/components/Display';
 
 export default function App() {
+  const [displayValue, setDisplayValue] = useState('0');
+
   return (
     <View style={styles.container}>
-      <View style={styles.button}>
+      <Display value={displayValue} />
+      <View style={styles.buttons}>
         <Button label="AC" />
         <Button label="/" />
         <Button label="7" />
