@@ -5,8 +5,14 @@ import Field from './src/components/Field';
 export default class App extends Component {
   render() {
     return (
-      <View>
-        <Text>App</Text>
+      <View style={styles.container}>
+        <Text>Iniciando o mines</Text>
+        <Field />
+        <Field opened />
+        <Field opened nearMines={1} />
+        <Field opened nearMines={2} />
+        <Field opened nearMines={3} />
+        <Field opened nearMines={6} />
       </View>
     );
   }
