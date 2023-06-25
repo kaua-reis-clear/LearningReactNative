@@ -40,4 +40,69 @@ const createMinedBoard = (rows, columns, minesAmount) => {
   return board;
 };
 
-export {createMinedBoard};
+const cloneBoard = board => {
+  return board.map(rows => {
+    return rows.map(field => {
+      return {...field};
+    });
+  });
+};
+
+const getNeighbours = (board, row, column) => {
+  const neighbours = [];
+  const rows = [row - 1, row, row + 1];
+  const columns = [column - 1, column, column + 1];
+  rows.forEach(r => {
+    columns.forEach(c => {
+      const diferent = r !== row || c !== column;
+      const validRow = r >= 0 && r < board.length;
+      const validColumn = c >= 0 && c < board[0].length;
+      if (diferent && validRow && validColumn) {
+        neighbours.push(board[r][c]);
+      }
+    });
+  });
+  return neighbours;
+};
+
+const safeNeighborhood = (board, row, column) => {
+  const safes = (result, neighbour) => result && !neighbour.mined;
+  return getNeighbours(board, row, column).reduce(safes, true);
+};
+
+const openField = (board, row, column) => {
+  const field = board[row][column];
+  if (!field.opened) {
+    field.opened = true;
+    if (field.mined) {
+      field.exploded = true;
+    } else if (safeNeighborhood(board, row, column)) {
+      getNeighbours(board, row, column).forEach(n =>
+        openField(board, n.row, n.column),
+      );
+    } else {
+      const neighbours = getNeighbours(board, row, column);
+      field.nearMines = neighbours.filter(n => n.mined).length;
+    }
+  }
+};
+
+const fields = board => [].concat(...board);
+const hadExplosion = board =>
+  fields(board).filter(field => field.exploded).length > 0;
+const pending = field =>
+  (field.mined && !field.flagged) || (!field.mined && !field.opened);
+const wonGame = board => fields(Board).filter(pending).length === 0;
+const showMines = board =>
+  fields(board)
+    .filter(field => field.mined)
+    .forEach(field => (field.opened = true));
+
+export {
+  createMinedBoard,
+  cloneBoard,
+  openField,
+  hadExplosion,
+  wonGame,
+  showMines,
+};
