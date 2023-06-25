@@ -1,5 +1,6 @@
 import {Text, StyleSheet, View} from 'react-native';
 import React, {Component} from 'react';
+import Field from './src/components/Field';
 
 export default class App extends Component {
   render() {
