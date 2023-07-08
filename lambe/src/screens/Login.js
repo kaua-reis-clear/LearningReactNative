@@ -7,11 +7,16 @@ import {
   TextInput,
 } from 'react-native';
 
+import useUser from '../data/hooks/useUser';
+
 export default props => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const {login} = useUser();
 
-  const login = () => {};
+  const onLogin = () => {
+    login(email, password);
+  };
 
   return (
     <View style={styles.container}>
@@ -30,15 +35,15 @@ export default props => {
         value={password}
         onChangeText={setPassword}
       />
-      <TouchableOpacity onPress={login} style={styles.buttom}>
-        <Text style={styles.buttomText}>Login</Text>
+      <TouchableOpacity onPress={onLogin} style={styles.button}>
+        <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
           props.navigation.navigate('Register');
         }}
-        style={styles.buttom}>
-        <Text style={styles.buttomText}>Criar nova conta...</Text>
+        style={styles.button}>
+        <Text style={styles.buttonText}>Criar nova conta...</Text>
       </TouchableOpacity>
     </View>
   );
@@ -50,12 +55,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttom: {
+  button: {
     marginTop: 30,
     padding: 10,
     backgroundColor: '#4286f4',
   },
-  buttomText: {
+  buttonText: {
     fontSize: 20,
     color: '#FFF',
   },
