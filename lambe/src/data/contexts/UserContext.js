@@ -13,6 +13,10 @@ export const UserProvider = ({children}) => {
       setName('Temporario');
       setEmail(email);
     },
+    logout: function () {
+      setName('');
+      setEmail('');
+    },
   };
 
   return (
