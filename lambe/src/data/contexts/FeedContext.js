@@ -32,7 +32,19 @@ export const FeedProvider = ({children}) => {
   const feedInternalContext = {
     posts,
     addPost: function(post) {
-        setPosts(posts.concat(post))
+      setPosts(posts.concat(post))
+    },
+    addComment: function(postId, comment) {
+      const postsTemp = posts.map(post => {
+          if(post.id === postId) {
+              if(!post.comments) {
+                  post.comments = []
+              } 
+              post.comments = post.comments.concat( comment )
+          }
+          return post
+      })
+      setPosts(postsTemp)
     }
   };
 
