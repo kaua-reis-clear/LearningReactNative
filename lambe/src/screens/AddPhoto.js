@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {
-  Alert,
   View,
   StyleSheet,
   ScrollView,
@@ -22,6 +21,8 @@ export default props => {
 
   const { addPost } = useFeed();
   const { name, email } = useUser();
+
+  const isLogged = () => email != null && email.trim() != ''
 
   const pickImage = () => {
     launchImageLibrary(
@@ -80,10 +81,18 @@ export default props => {
           <Image source={image} style={styles.image} />
         </View>
         <View style={styles.buttomRow}>
-          <TouchableOpacity onPress={pickPhoto} style={styles.buttom}>
+          <TouchableOpacity
+            onPress={pickPhoto}
+            disabled={!isLogged()}
+            style={[styles.buttom, isLogged()? {}: styles.buttomDisabled]}
+          >
             <Text style={styles.buttomText}>Tirar uma foto</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={pickImage} style={styles.buttom}>
+          <TouchableOpacity 
+            onPress={pickImage} 
+            disabled={!isLogged()} 
+            style={[styles.buttom, isLogged()? {}: styles.buttomDisabled]}
+          >
             <Text style={styles.buttomText}>Escolha a foto</Text>
           </TouchableOpacity>
         </View>
@@ -91,9 +100,13 @@ export default props => {
           placeholder="Algum comentário para a foto?"
           style={styles.input}
           value={comment}
-          onChangeText={setComment}
+          onChangeText={setComment} editable={isLogged()} 
         />
-        <TouchableOpacity onPress={save} style={styles.buttom}>
+        <TouchableOpacity
+          onPress={save}
+          disabled={!isLogged()}
+          style={[styles.buttom, isLogged()? {}: styles.buttomDisabled]} 
+        >
           <Text style={styles.buttomText}>Salvar</Text>
         </TouchableOpacity>
       </View>
@@ -140,4 +153,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '90%',
   },
+  buttomDisabled: {
+    backgroundColor: '#666'
+  }
 });
