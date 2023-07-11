@@ -1,4 +1,5 @@
 import React, {createContext, useState} from 'react';
+import axios from 'axios'
 
 const FeedContext = createContext({});
 
@@ -31,8 +32,13 @@ export const FeedProvider = ({children}) => {
 
   const feedInternalContext = {
     posts,
-    addPost: function(post) {
+    addPost: async function(post) {
       setPosts(posts.concat(post))
+      try {
+          await axios.post('/posts.json', post)
+      } catch(err) {
+          console.log(err)
+      }
     },
     addComment: function(postId, comment) {
       const postsTemp = posts.map(post => {

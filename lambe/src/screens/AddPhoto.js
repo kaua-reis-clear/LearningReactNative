@@ -20,7 +20,7 @@ export default props => {
   const [comment, setComment] = useState('');
 
   const { addPost } = useFeed();
-  const { name, email } = useUser();
+  const { name: nickname, email } = useUser()
 
   const isLogged = () => email != null && email.trim() != ''
 
@@ -34,7 +34,7 @@ export default props => {
       },
       res => {
         if (!res.didCancel) {
-          setImage({uri: res.assets[0].uri, base64: res.assets[0].data});
+          setImage({ uri: res.assets[0].uri, base64: res.assets[0].base64 })
         }
       },
     );
@@ -51,7 +51,7 @@ export default props => {
       },
       res => {
         if (!res.didCancel) {
-          setImage({uri: res.assets[0].uri, base64: res.assets[0].data});
+          setImage({ uri: res.assets[0].uri, base64: res.assets[0].base64 })
         }
       },
     );
@@ -60,13 +60,10 @@ export default props => {
   const save = () => {
     addPost({
       id: Math.random(),
-      nickname: name,
-      email: email,
-      image: image,
-      comments: [{
-          nickname: name,
-          comment: comment
-      }]
+      nickname,
+      email,
+      image,
+      comments: [{nickname, comment}]
     })
     setImage(null)
     setComment('')
