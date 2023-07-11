@@ -13,10 +13,15 @@ import {
 } from 'react-native';
 
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import useFeed from '../data/hooks/useFeed'
+import useUser from '../data/hooks/useUser'
 
 export default props => {
   const [image, setImage] = useState(null);
   const [comment, setComment] = useState('');
+
+  const { addPost } = useFeed();
+  const { name, email } = useUser();
 
   const pickImage = () => {
     launchImageLibrary(
@@ -52,7 +57,19 @@ export default props => {
   };
 
   const save = () => {
-    Alert.alert('Comentário adicionado', comment);
+    addPost({
+      id: Math.random(),
+      nickname: name,
+      email: email,
+      image: image,
+      comments: [{
+          nickname: name,
+          comment: comment
+      }]
+    })
+    setImage(null)
+    setComment('')
+    props.navigation.navigate('Feed')
   };
 
   return (

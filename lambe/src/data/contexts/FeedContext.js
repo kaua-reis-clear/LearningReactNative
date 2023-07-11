@@ -31,6 +31,9 @@ export const FeedProvider = ({children}) => {
 
   const feedInternalContext = {
     posts,
+    addPost: function(post) {
+        setPosts(posts.concat(post))
+    }
   };
 
   return (
