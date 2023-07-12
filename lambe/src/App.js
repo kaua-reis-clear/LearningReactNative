@@ -1,12 +1,13 @@
 import React from 'react';
 import {Alert} from 'react-native';
 import Navigator from './Navigator';
+import Splash from './screens/Splash';
 import useEffectIfNot from './hooks/UseEffectIfNot';
 
 import useEvent from './data/hooks/useEvent';
 
 export default props => {
-  const {message, messageTitle, clearMessage} = useEvent();
+  const {splash, message, messageTitle, clearMessage} = useEvent();
 
   useEffectIfNot(
     () => {
@@ -17,5 +18,5 @@ export default props => {
     [''],
   );
 
-  return <Navigator />;
+  return splash ? <Splash /> : <Navigator />;
 };
