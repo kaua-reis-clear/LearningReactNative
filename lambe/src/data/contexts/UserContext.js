@@ -12,11 +12,13 @@ const UserContext = createContext({});
 export const UserProvider = ({children}) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [token, setToken] = useState('');
   const {setMessage} = useEvent();
 
   const userInternalContext = {
     name,
     email,
+    token,
     createUser: async user => {
       try {
         const resNewUser = await axios.post(
@@ -28,14 +30,10 @@ export const UserProvider = ({children}) => {
           },
         );
         if (resNewUser.data.localId) {
-          const res = await axios.put(
-            `/users/${resNewUser.data.localId}.json`,
-            {
-              name: user.name,
-            },
-          );
-          setName(user.name);
-          setEmail(user.email);
+          await axios.put(`/users/${resNewUser.data.localId}.json`, {
+            name: user.name,
+          });
+          userInternalContext.login(user.email, user.password);
         }
       } catch (err) {
         setMessage(err.message, 'Erro');
@@ -55,6 +53,7 @@ export const UserProvider = ({children}) => {
           const res = await axios.get(`/users/${resAuth.data.localId}.json`);
           setName(res.data.name);
           setEmail(email);
+          setToken(resAuth.data.idToken);
         }
       } catch (err) {
         setMessage(err.message, 'Erro');
@@ -63,6 +62,7 @@ export const UserProvider = ({children}) => {
     logout: function () {
       setName('');
       setEmail('');
+      setToken('');
     },
   };
 
