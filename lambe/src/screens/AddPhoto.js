@@ -10,19 +10,22 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
+import useEffectIf from '../hooks/UseEffectIf';
 
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import useFeed from '../data/hooks/useFeed'
-import useUser from '../data/hooks/useUser'
+import useFeed from '../data/hooks/useFeed';
+import useUser from '../data/hooks/useUser';
+import useEvent from '../data/hooks/useEvent';
 
 export default props => {
   const [image, setImage] = useState(null);
   const [comment, setComment] = useState('');
 
-  const { addPost } = useFeed();
-  const { name: nickname, email } = useUser()
+  const {addPost} = useFeed();
+  const {name: nickname, email} = useUser();
+  const {uploading} = useEvent();
 
-  const isLogged = () => email != null && email.trim() != ''
+  const canEdit = () => email != null && email.trim() != '' && !uploading;
 
   const pickImage = () => {
     launchImageLibrary(
@@ -34,7 +37,7 @@ export default props => {
       },
       res => {
         if (!res.didCancel) {
-          setImage({ uri: res.assets[0].uri, base64: res.assets[0].base64 })
+          setImage({uri: res.assets[0].uri, base64: res.assets[0].base64});
         }
       },
     );
@@ -51,7 +54,7 @@ export default props => {
       },
       res => {
         if (!res.didCancel) {
-          setImage({ uri: res.assets[0].uri, base64: res.assets[0].base64 })
+          setImage({uri: res.assets[0].uri, base64: res.assets[0].base64});
         }
       },
     );
@@ -63,12 +66,19 @@ export default props => {
       nickname,
       email,
       image,
-      comments: [{nickname, comment}]
-    })
-    setImage(null)
-    setComment('')
-    props.navigation.navigate('Feed')
+      comments: [{nickname, comment}],
+    });
   };
+
+  useEffectIf(
+    () => {
+      setImage(null);
+      setComment('');
+      props.navigation.navigate('Feed');
+    },
+    uploading,
+    false,
+  );
 
   return (
     <ScrollView>
@@ -80,16 +90,15 @@ export default props => {
         <View style={styles.buttomRow}>
           <TouchableOpacity
             onPress={pickPhoto}
-            disabled={!isLogged()}
-            style={[styles.buttom, isLogged()? {}: styles.buttomDisabled]}
-          >
+            disabled={!canEdit()}
+            style={[styles.buttom, canEdit() ? {} : styles.buttomDisabled]}>
             <Text style={styles.buttomText}>Tirar uma foto</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            onPress={pickImage} 
-            disabled={!isLogged()} 
-            style={[styles.buttom, isLogged()? {}: styles.buttomDisabled]}
-          >
+
+          <TouchableOpacity
+            onPress={pickImage}
+            disabled={!canEdit()}
+            style={[styles.buttom, canEdit() ? {} : styles.buttomDisabled]}>
             <Text style={styles.buttomText}>Escolha a foto</Text>
           </TouchableOpacity>
         </View>
@@ -97,13 +106,13 @@ export default props => {
           placeholder="Algum comentário para a foto?"
           style={styles.input}
           value={comment}
-          onChangeText={setComment} editable={isLogged()} 
+          onChangeText={setComment}
+          editable={canEdit()}
         />
         <TouchableOpacity
           onPress={save}
-          disabled={!isLogged()}
-          style={[styles.buttom, isLogged()? {}: styles.buttomDisabled]} 
-        >
+          disabled={!canEdit()}
+          style={[styles.buttom, canEdit() ? {} : styles.buttomDisabled]}>
           <Text style={styles.buttomText}>Salvar</Text>
         </TouchableOpacity>
       </View>
@@ -151,6 +160,6 @@ const styles = StyleSheet.create({
     width: '90%',
   },
   buttomDisabled: {
-    backgroundColor: '#666'
-  }
+    backgroundColor: '#666',
+  },
 });

@@ -1,12 +1,15 @@
 import React, {createContext, useState} from 'react';
 import axios from 'axios';
+import useEvent from '../hooks/useEvent';
 
 const FeedContext = createContext({});
 
 export const FeedProvider = ({children}) => {
   const [posts, setPosts] = useState([]);
+  const {startingUpload, finishedUpload} = useEvent();
 
   const feedInternalContext = {
+    posts,
     fetchPosts: async function () {
       try {
         const res = await axios.get('/posts.json');
@@ -24,9 +27,20 @@ export const FeedProvider = ({children}) => {
       }
     },
     addPost: async function (post) {
-      setPosts(posts.concat(post));
       try {
+        startingUpload();
+        const resStorage = await axios({
+          url: 'uploadImage',
+          baseURL: 'https://us-central1-instaclone-b78e8.cloudfunctions.net',
+          method: 'post',
+          data: {
+            image: post.image.base64,
+          },
+        });
+        post.image = resStorage.data.imageUrl;
         await axios.post('/posts.json', post);
+        finishedUpload();
+        feedInternalContext.fetchPosts();
       } catch (err) {
         console.log(err);
       }
