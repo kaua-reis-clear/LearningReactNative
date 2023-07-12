@@ -7,19 +7,19 @@ import {
   StyleSheet,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import useFeed from "../data/hooks/useFeed"
-import useUser from "../data/hooks/useUser"
+import useFeed from '../data/hooks/useFeed';
+import useUser from '../data/hooks/useUser';
 
-export default ({ postId }) => {
+export default ({postId}) => {
   const [comment, setComment] = useState('');
   const [editMode, setEditMode] = useState(false);
-  const { addComment } = useFeed();
-  const { name: nickname } = useUser();
+  const {addComment} = useFeed();
+  const {name: nickname} = useUser();
 
   const handleAddComment = () => {
-    addComment(postId, {nickname, comment})
-    setComment('')
-    setEditMode(false)
+    addComment(postId, {nickname, comment});
+    setComment('');
+    setEditMode(false);
   };
 
   let commentArea = null;
