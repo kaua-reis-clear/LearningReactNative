@@ -11,9 +11,9 @@ import Navigator from './src/Navigator';
 import {FeedProvider} from './src/data/contexts/FeedContext';
 import {UserProvider} from './src/data/contexts/UserContext';
 
-import axios from 'axios'
+import axios from 'axios';
 
-axios.defaults.baseURL='https://lambe-42887-default-rtdb.firebaseio.com/'
+axios.defaults.baseURL = 'https://lambe-42887-default-rtdb.firebaseio.com/';
 
 const Root = () => (
   <UserProvider>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import Header from '../components/Header';
 import Post from '../components/Post';
@@ -6,7 +6,11 @@ import Post from '../components/Post';
 import useFeed from '../data/hooks/useFeed';
 
 export default props => {
-  const {posts} = useFeed();
+  const {posts, fetchPosts} = useFeed();
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   return (
     <View style={styles.container}>

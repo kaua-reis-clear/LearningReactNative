@@ -1,57 +1,48 @@
 import React, {createContext, useState} from 'react';
-import axios from 'axios'
+import axios from 'axios';
 
 const FeedContext = createContext({});
 
 export const FeedProvider = ({children}) => {
-  const [posts, setPosts] = useState([
-    {
-      id: Math.random(),
-      nickname: 'Rafael Pereira Filho',
-      email: 'rafaelprrflh@gmail.com',
-      image: require('../../../assets/imgs/fence.jpg'),
-      comments: [
-        {
-          nickname: 'John Ray Sheldon',
-          comment: 'Stunning!',
-        },
-        {
-          nickname: 'Ana Julia Arruda',
-          comment: 'Foto linda! Onder foi tirada?',
-        },
-      ],
-    },
-    {
-      id: Math.random(),
-      nickname: 'Francisco Leandro Lima',
-      email: 'fllima@gmail.com',
-      image: require('../../../assets/imgs/bw.jpg'),
-      comments: [],
-    },
-  ]);
+  const [posts, setPosts] = useState([]);
 
   const feedInternalContext = {
-    posts,
-    addPost: async function(post) {
-      setPosts(posts.concat(post))
+    fetchPosts: async function () {
       try {
-          await axios.post('/posts.json', post)
-      } catch(err) {
-          console.log(err)
+        const res = await axios.get('/posts.json');
+        const rawPosts = res.data;
+        const postsTemp = [];
+        for (let key in rawPosts) {
+          postsTemp.push({
+            ...rawPosts[key],
+            id: key,
+          });
+        }
+        setPosts(postsTemp);
+      } catch (err) {
+        console.log(err);
       }
     },
-    addComment: function(postId, comment) {
+    addPost: async function (post) {
+      setPosts(posts.concat(post));
+      try {
+        await axios.post('/posts.json', post);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    addComment: function (postId, comment) {
       const postsTemp = posts.map(post => {
-          if(post.id === postId) {
-              if(!post.comments) {
-                  post.comments = []
-              } 
-              post.comments = post.comments.concat( comment )
+        if (post.id === postId) {
+          if (!post.comments) {
+            post.comments = [];
           }
-          return post
-      })
-      setPosts(postsTemp)
-    }
+          post.comments = post.comments.concat(comment);
+        }
+        return post;
+      });
+      setPosts(postsTemp);
+    },
   };
 
   return (
