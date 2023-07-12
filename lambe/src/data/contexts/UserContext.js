@@ -1,4 +1,9 @@
 import React, {createContext, useState} from 'react';
+import axios from 'axios';
+
+const FIREBASE_AUTH_BASE_URL =
+  'https://www.googleapis.com/identitytoolkit/v3/relyingparty';
+const API_KEY = '07be5e1fdd1078361a40c08f195fd6dabe80f8f3';
 
 const UserContext = createContext({});
 
@@ -9,6 +14,30 @@ export const UserProvider = ({children}) => {
   const userInternalContext = {
     name,
     email,
+    createUser: async user => {
+      try {
+        const resNewUser = await axios.post(
+          `${FIREBASE_AUTH_BASE_URL}/signupNewUser?key=${API_KEY}`,
+          {
+            email: user.email,
+            password: user.password,
+            returnSecureToken: true,
+          },
+        );
+        if (resNewUser.data.localId) {
+          const res = await axios.put(
+            `/users/${resNewUser.data.localId}.json`,
+            {
+              name: user.name,
+            },
+          );
+          setName(user.name);
+          setEmail(user.email);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
     login: function (email, password) {
       setName('Temporario');
       setEmail(email);
