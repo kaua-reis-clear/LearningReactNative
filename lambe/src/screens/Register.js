@@ -39,8 +39,8 @@ export default props => {
       />
       <TouchableOpacity
         onPress={() => createUser({name, email, password})}
-        style={styles.buttom}>
-        <Text style={styles.buttomText}>Salvar</Text>
+        style={styles.button}>
+        <Text style={styles.buttonText}>Salvar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -52,12 +52,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttom: {
+  button: {
     marginTop: 30,
     padding: 10,
     backgroundColor: '#4286f4',
   },
-  buttomText: {
+  buttonText: {
     fontSize: 20,
     color: '#FFF',
   },

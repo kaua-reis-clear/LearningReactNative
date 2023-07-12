@@ -87,19 +87,19 @@ export default props => {
         <View style={styles.imageContainer}>
           <Image source={image} style={styles.image} />
         </View>
-        <View style={styles.buttomRow}>
+        <View style={styles.buttonRow}>
           <TouchableOpacity
             onPress={pickPhoto}
             disabled={!canEdit()}
-            style={[styles.buttom, canEdit() ? {} : styles.buttomDisabled]}>
-            <Text style={styles.buttomText}>Tirar uma foto</Text>
+            style={[styles.button, canEdit() ? {} : styles.buttonDisabled]}>
+            <Text style={styles.buttonText}>Tirar uma foto</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={pickImage}
             disabled={!canEdit()}
-            style={[styles.buttom, canEdit() ? {} : styles.buttomDisabled]}>
-            <Text style={styles.buttomText}>Escolha a foto</Text>
+            style={[styles.button, canEdit() ? {} : styles.buttonDisabled]}>
+            <Text style={styles.buttonText}>Escolha a foto</Text>
           </TouchableOpacity>
         </View>
         <TextInput
@@ -112,8 +112,8 @@ export default props => {
         <TouchableOpacity
           onPress={save}
           disabled={!canEdit()}
-          style={[styles.buttom, canEdit() ? {} : styles.buttomDisabled]}>
-          <Text style={styles.buttomText}>Salvar</Text>
+          style={[styles.button, canEdit() ? {} : styles.buttonDisabled]}>
+          <Text style={styles.buttonText}>Salvar</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -141,17 +141,17 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').width / 2,
     resizeMode: 'center',
   },
-  buttomRow: {
+  buttonRow: {
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-around',
   },
-  buttom: {
+  button: {
     marginTop: 30,
     padding: 10,
     backgroundColor: '#4286f4',
   },
-  buttomText: {
+  buttonText: {
     fontSize: 20,
     color: '#FFF',
   },
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '90%',
   },
-  buttomDisabled: {
+  buttonDisabled: {
     backgroundColor: '#666',
   },
 });
